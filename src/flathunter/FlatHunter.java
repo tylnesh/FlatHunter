@@ -13,9 +13,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Vector;
 
 import javax.net.ssl.HttpsURLConnection;
-import org.jsoup.parser;
+import org.jsoup.Jsoup;
+import org.jsoup.Connection;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * 
@@ -39,15 +44,35 @@ public class FlatHunter {
          String distance = args[1];
          String priceMin = args[2];
          String priceMax = args[3];
-         String httpsURL = "https://reality.bazos.sk/prenajmu/byt/10/?hledat=&rubriky=reality&hlokalita="+location+"&humkreis="+distance+"&cenaod="+priceMin+"&cenado="+priceMax;
-         String htmlFile = "/tmp/tempFile.html";
+         int pages = 1;
+         String httpsURL = "https://reality.bazos.sk/prenajmu/byt/"+ pages +"0/?hledat=&rubriky=reality&hlokalita="+location+"&humkreis="+distance+"&cenaod="+priceMin+"&cenado="+priceMax;
+         String htmlFile = "/tmp/tempFile"+pages+".html";
         
          //getHtml(httpsURL, htmlFile);
-         if (getHtml(httpsURL, htmlFile)> 0) {
-             
-         
-         }
+         //if (getHtml(httpsURL, htmlFile)> 0) {}
         
+        //while (getHtml(httpsURL, htmlFile) > 0) i++;
+        //System.out.println("URL: " + httpsURL);
+        Document doc = Jsoup.connect(httpsURL).get();
+        //Document doc = Jsoup.parse(File., distance)
+        
+        //Document doc = Jsoup.
+        System.out.println(doc.title());
+        Elements offers = doc.getElementsByClass("vypis");
+        System.out.println(offers.size());
+        
+        Vector flats = new Vector();
+        
+        for (Element offer : offers) {
+             //if (Integer.parseInt(flat.getElementsByClass("cena").text().toString().substring(0, 2)) < 450 ) flat.getElementsByClass("popis").text());
+            
+             flats.add(new Flat("addresa pekelna" ,0,99,"loremimpsumdescriptorum","https://lorem.sk"));
+
+        }
+        Object e = flats.firstElement();
+        System.out.println(((Flat) e).getAddress());
+        Flat test = (Flat) e;
+        System.out.println(test.getAddress());
          }
     }
     
@@ -71,6 +96,7 @@ public class FlatHunter {
         }
         in.close(); 
         bw.close();
+        
         return lines;
     }
     
