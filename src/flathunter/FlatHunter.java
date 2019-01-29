@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.List;
 import java.util.Vector;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -21,6 +22,7 @@ import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 
 /**
  * 
@@ -45,34 +47,23 @@ public class FlatHunter {
          String priceMin = args[2];
          String priceMax = args[3];
          int pages = 1;
-         String httpsURL = "https://reality.bazos.sk/prenajmu/byt/"+ pages +"0/?hledat=&rubriky=reality&hlokalita="+location+"&humkreis="+distance+"&cenaod="+priceMin+"&cenado="+priceMax;
-         String htmlFile = "/tmp/tempFile"+pages+".html";
+         //String httpsURL = "https://reality.bazos.sk/prenajmu/byt/"+ pages +"0/?hledat=&rubriky=reality&hlokalita="+location+"&humkreis="+distance+"&cenaod="+priceMin+"&cenado="+priceMax;
+         //String htmlFile = "/tmp/tempFile"+pages+".html";
         
+         
+         parseBazos(location,distance,priceMin,priceMax);
          //getHtml(httpsURL, htmlFile);
          //if (getHtml(httpsURL, htmlFile)> 0) {}
         
         //while (getHtml(httpsURL, htmlFile) > 0) i++;
         //System.out.println("URL: " + httpsURL);
-        Document doc = Jsoup.connect(httpsURL).get();
+        //Document doc = Jsoup.connect(httpsURL).get();
         //Document doc = Jsoup.parse(File., distance)
         
         //Document doc = Jsoup.
-        System.out.println(doc.title());
-        Elements offers = doc.getElementsByClass("vypis");
-        System.out.println(offers.size());
+//        System.out.println(doc.title());
+ //       Elements offers = doc.getElementsByClass("vypis");
         
-        Vector flats = new Vector();
-        
-        for (Element offer : offers) {
-             //if (Integer.parseInt(flat.getElementsByClass("cena").text().toString().substring(0, 2)) < 450 ) flat.getElementsByClass("popis").text());
-            
-             flats.add(new Flat("addresa pekelna" ,0,99,"loremimpsumdescriptorum","https://lorem.sk"));
-
-        }
-        Object e = flats.firstElement();
-        System.out.println(((Flat) e).getAddress());
-        Flat test = (Flat) e;
-        System.out.println(test.getAddress());
          }
     }
     
@@ -100,4 +91,78 @@ public class FlatHunter {
         return lines;
     }
     
+    
+    public static void parseBazos(String location, String distance, String priceMin, String priceMax) throws IOException
+    {
+     
+        String httpsRoot = "https://reality.bazos.sk/prenajmu/byt/?hledat=&rubriky=reality&hlokalita="+location+"&humkreis="+distance+"&cenaod="+priceMin+"&cenado="+priceMax;
+        Vector followUps = new Vector();
+        followUps.add(httpsRoot);
+        Document doc = Jsoup.connect(httpsRoot).get();
+        
+        Elements pages = doc.getElementsByClass("strankovani");
+        List<String> nextPages = null;
+        for (Element page : pages){
+            
+                nextPages = (page.getElementsByTag("a").next("a").eachAttr("href"));
+ //               System.out.println(nextPages);
+        }
+        //System.out.println(nextPages.size());
+                for (int i = 1; i < nextPages.size() - 1; i++ )
+                {
+                followUps.add("https://reality.bazos.sk/" + nextPages.get(i));
+                //System.out.println(nextPages.size()) ;
+                }
+                //System.out.println(followUps.size()) ;
+               //System.out.println(followUps) ;
+        
+   
+        for (int i =0; i<followUps.size(); i++)
+        {
+        
+        doc = Jsoup.connect(followUps.elementAt(i).toString()).get();
+        Elements offers = doc.getElementsByClass("vypis");
+        System.out.println(offers.size());
+        //doc = doc.getElementsByClass("vypis")
+        }
+        //Elements offers = doc.getElementsByClass("vypis");
+        
+        //System.out.println(offers.size());
+        
+        //Vector flats = new Vector();
+             
+             
+
+        }
+        //Object e = flats.firstElement();
+        //System.out.println(((Flat) e).getAddress());
+        //Flat test = (Flat) e;
+        //System.out.println(test.getAddress());
+    
+    
+    
+
+    public Integer hamming(String left, String right) {
+if (left == null || right == null) {
+            throw new IllegalArgumentException("Strings must not be null");
+        }
+
+        if (left.length() != right.length()) {
+            throw new IllegalArgumentException("Strings must have the same length");
+        }
+
+        int distance = 0;
+
+        for (int i = 0; i < left.length(); i++) {
+            if (left.charAt(i) != right.charAt(i)) {
+                distance++;
+            }
+        }
+
+        return distance;
+    
+
+}
+
+
 }
